@@ -1,4 +1,4 @@
-# contourFitElipse
+# contourFitEllipse
 ## C++ implementation of python Ellipse detection script
 ## First principles implementation based on openCV
 

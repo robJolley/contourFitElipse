@@ -61,7 +61,7 @@ int main()
 															for (int yk = 0; yk < 5; yk++)
 															{
 																		floatPixel = (double)(rawImg.at<uchar>((h + (xk - mp)), (w + (yk - mp))));
-																		kernalCumulator += floatPixel*(double)kernel[xk][yk]*.90;//Mutiplier required as rounding is making number go above 255,  possible use double?
+																		kernalCumulator += floatPixel*(double)kernel[xk][yk]*.90;//Mutiplier required as rounding is making number go above 255,  better solution?
 																}
 												}
 									}

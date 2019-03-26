@@ -96,7 +96,9 @@ int main()
 																														{1,6,12,6,1}};
 			// Above normalised kernal for smoothing,  see origional python script for method 
 			start = std::clock();
-			int height, width, intPixel, tSx, tSy, tS, dirE = 0;
+			int height, width, intPixel, tSx, tSy, tS, dirE,maxDir,curPoint = 0;
+			bool maxPoint;
+
 			double floatPixel = 0.0;
 			int kernalCumulator = 0;
 			const int mp = 3;
@@ -197,6 +199,74 @@ int main()
 									tSy = 0;
 						}
 			}
+			for (int h = 1; h < (height-1); h++)
+			{
+						for (int w = 1; w < (width-1); w++)
+						{
+									dirE = directionImg.at<uchar>(h, w);
+									maxPoint = true;
+									maxDir = 0;
+									curPoint = sobelImg.at<uchar>(h, w);
+									if (curPoint > 0)
+									{
+												if ((22 < dirE) && (dirE <= 67)) // #NW
+												{
+															maxDir = 255;
+															if (sobelImg.at<uchar>(h - 1, w + 1) >= curPoint)
+															{
+																			maxPoint = false;
+															}
+															if (curPoint <= sobelImg.at<uchar>(h + 1, w - 1))
+															{
+																		maxPoint = false;
+															}
+															}
+												else if ((67 < dirE) && (dirE <= 122)) //N
+												{
+															maxDir = 255;
+															if (sobelImg.at<uchar>(h - 1, w) >= curPoint)
+																		{
+																		maxPoint = false;
+																		}
+															if (curPoint <= sobelImg.at<uchar>(h + 1, w))
+																		{
+																		maxPoint = false;
+																		}
+												}
+														else if ((122 < dirE) && (dirE <= 157)) // #NE
+															{
+																		maxDir = 255;
+																		if (sobelImg.at<uchar>(h - 1, w - 1) >= curPoint)
+																					{
+																					maxPoint = false;
+																					}
+																					if (curPoint <= sobelImg.at<uchar>(h + 1, w + 1))
+																								{
+																								maxPoint = false;
+																								}
+																					}
+															else //E
+																	{	
+																				maxDir = 255;
+																				if (sobelImg.at<uchar>(h, w - 1) >= curPoint)
+																					{
+																											maxPoint = false;
+																					}
+																				if (curPoint <= sobelImg.at<uchar>(h, w + 1, 0))
+																											{
+																														maxPoint = false;
+																											}
+																								}
+																		if (maxPoint)
+																					{
+																																	cannyImg.at<uchar>(h, w) = maxDir;
+																					}
+																		}
+
+															}
+
+												}
+
 
 			duration = ((clock()) - start) / (double)CLOCKS_PER_SEC;
 			start = clock();
@@ -206,6 +276,8 @@ int main()
 	imshow("Direction Image", directionImg);
 	imwrite("directionImage.jpg", directionImg);
 
+	imshow("Canny Image", cannyImg);
+	imwrite("cannyImage.jpg", cannyImg);
 
 			imwrite("sobelImage.jpg", sobelImg);
 			imshow("SobelImage", sobelImg);

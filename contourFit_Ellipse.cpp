@@ -93,7 +93,7 @@ int main()
 																														{6,42,79,42,6},
 																														{12,79,148,79,12},
 																														{6,42,79,42,6},
-																														{1,6,12,6,1}};
+																														{1,6,12,6,1}};// 1/732
 			// Above normalised kernal for smoothing,  see origional python script for method 
 			start = std::clock();
 			int height, width, intPixel, tSx, tSy, tS, dirE,maxDir,curPoint = 0;
@@ -107,7 +107,7 @@ int main()
 //			start = clock();
 //			cout << "Start image in" << duration << '\n';
 //			Mat dst;
-			Mat rawImg = imread("C:\\Users\\RobertJolley\\OneDrive - Innopharma Labs\\Documents\\openCV_Master\\openCVexample\\openCVexample\\brace200.jpg",0);
+			Mat rawImg = imread("C:\\Users\\RobertJolley\\OneDrive - Innopharma Labs\\Documents\\openCV_Master\\openCVexample\\openCVexample\\trem.jpg",0);
 			height = rawImg.rows;
 			width = rawImg.cols;
 			cout << "Height of image " << height << '\n';
@@ -149,14 +149,17 @@ int main()
 															for (int yk = 0; yk < 5; yk++)
 															{
 																		intPixel = (rawImg.at<uchar>((h + (xk - mp)), (w + (yk - mp))));
-																		kernalCumulator += intPixel*(kernel[xk][yk])/10*9;//Mutiplier required as rounding is making number go above 255,  better solution?
+																		kernalCumulator += intPixel*(kernel[xk][yk]);//Mutiplier required as rounding is making number go above 255,  better solution?
 																}
 												}
 									}
 
-									kernalCumulator = kernalCumulator/687;
+									kernalCumulator = kernalCumulator/732;
 									if (kernalCumulator < 0.0 || kernalCumulator > 255)
-												cout << "kernal Value" << kernalCumulator << '\n';
+												{ 
+												cout << "kernal Value: " << kernalCumulator;
+												cout << " intPixel:" << intPixel << '\n';
+												}
 									filteredImg.at<uchar>(h,w) = (int)kernalCumulator;
 									kernalCumulator = 0.0;
 						}
@@ -181,11 +184,11 @@ int main()
 																		tSy += sobelY[xk][yk]*filteredImg.at<uchar>(((h - 1) + xk), ((w - 1) + yk));
 															}
 												}
-												tS = (int)(0.4*sqrt(tSx*tSx + tSy*tSy));//going over 255 thus 0.4 need to fix 16 bit wide in python??
+												tS = (int)(0.28*sqrt(tSx*tSx + tSy*tSy));//going over 255 thus 0.4 need to fix 16 bit wide in python??
 												if (tS > 25)// Was 76
 												{
 															if(tS > 255)
-																		cout << "Well this is inexpected:" << tS << '\n';
+																		cout << "Ts:" << tS << " tSx:" << tSx << " tSy:" << tSy << '\n';
 															sobelImg.at<uchar>(h,w) = tS;
 															dirE = (atan((float)tSy/(float)tSx))*(float)(180.0 /PI);
 															if (dirE < 0)
@@ -193,10 +196,13 @@ int main()
 															dirE = 180 - dirE;
 															directionImg.at<uchar>(h, w) = dirE;
 												}
+												tS = 0;
+												tSx = 0;
+												tSy = 0;
 									}
-									tS = 0;
-									tSx = 0;
-									tSy = 0;
+//									tS = 0;
+//									tSx = 0;
+//									tSy = 0;
 						}
 			}
 			for (int h = 1; h < (height-1); h++)
@@ -209,38 +215,38 @@ int main()
 									curPoint = sobelImg.at<uchar>(h, w);
 									if (curPoint > 0)
 									{
-												if ((22 < dirE) && (dirE <= 67)) // #NW
+												if ((22 <= dirE) && (dirE <= 67)) // #NW
 												{
 															maxDir = 255;
-															if (sobelImg.at<uchar>(h - 1, w + 1) >= curPoint)
+															if (sobelImg.at<uchar>(h - 1, w + 1) > curPoint)
 															{
 																			maxPoint = false;
 															}
-															if (curPoint <= sobelImg.at<uchar>(h + 1, w - 1))
+															if (curPoint < sobelImg.at<uchar>(h + 1, w - 1))
 															{
 																		maxPoint = false;
 															}
 															}
-												else if ((67 < dirE) && (dirE <= 122)) //N
+												else if ((67 <= dirE) && (dirE <= 122)) //N
 												{
 															maxDir = 255;
-															if (sobelImg.at<uchar>(h - 1, w) >= curPoint)
+															if (sobelImg.at<uchar>(h - 1, w) > curPoint)
 																		{
 																		maxPoint = false;
 																		}
-															if (curPoint <= sobelImg.at<uchar>(h + 1, w))
+															if (curPoint < sobelImg.at<uchar>(h + 1, w))
 																		{
 																		maxPoint = false;
 																		}
 												}
-														else if ((122 < dirE) && (dirE <= 157)) // #NE
+														else if ((122 <= dirE) && (dirE <= 157)) // #NE
 															{
 																		maxDir = 255;
-																		if (sobelImg.at<uchar>(h - 1, w - 1) >= curPoint)
+																		if (sobelImg.at<uchar>(h - 1, w - 1) > curPoint)
 																					{
 																					maxPoint = false;
 																					}
-																					if (curPoint <= sobelImg.at<uchar>(h + 1, w + 1))
+																					if (curPoint < sobelImg.at<uchar>(h + 1, w + 1))
 																								{
 																								maxPoint = false;
 																								}
@@ -248,18 +254,18 @@ int main()
 															else //E
 																	{	
 																				maxDir = 255;
-																				if (sobelImg.at<uchar>(h, w - 1) >= curPoint)
+																				if (sobelImg.at<uchar>(h, w - 1) > curPoint)
 																					{
 																											maxPoint = false;
 																					}
-																				if (curPoint <= sobelImg.at<uchar>(h, w + 1, 0))
+																				if (curPoint < sobelImg.at<uchar>(h, w + 1, 0))
 																											{
 																														maxPoint = false;
 																											}
 																								}
 																		if (maxPoint)
 																					{
-																																	cannyImg.at<uchar>(h, w) = maxDir;
+																																	cannyImg.at<uchar>(h, w) = 255;
 																					}
 																		}
 

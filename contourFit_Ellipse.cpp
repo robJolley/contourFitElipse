@@ -12,6 +12,7 @@
 #define BM 6
 #define BL 7
 #define ML 8
+#define HIGH_VALUE 1
 
 
 using namespace std;
@@ -201,7 +202,8 @@ int main()
 															if (tS > 255)
 																		cout << "Ts:" << tS << " tSx:" << tSx << " tSy:" << tSy << '\n';
 															sobelImg.at<uchar>(h, w) = tS;
-															dirE = (int)(atan((float)tSy / (float)tSx))*(float)(180.0 / PI);
+															dirE = (atan((float)tSy / (float)tSx))*(float)(180.0 / PI);
+//															dirE = (int)(atan((float)tSy / (float)tSx))*(float)(180.0 / PI);
 															if (dirE < 0)
 																		dirE = dirE + 180;
 															dirE = 180 - dirE;
@@ -281,19 +283,19 @@ int main()
 												}
 												if (maxPoint)
 												{
-															cannyImg.at<uchar>(h, w) = 255;
+															cannyImg.at<uchar>(h, w) = HIGH_VALUE;
 												}
 									}
 
 						}
 
 			}
-			/*
+			
 			pixel tempPixel;
 			duration = ((clock()) - start) / (double)CLOCKS_PER_SEC;
 			start = clock();
 			cout << "Canny Edge Duration" << duration << '\n';
-			int curhtemp, curwtemp;
+			int curhtemp, curwtemp = 0;
 			nextPixel = false;
 			for (int h = 1; h < (height - 1); h++)
 			{
@@ -319,7 +321,7 @@ int main()
 												if ((tl == 1) || (tm == 1) || (tr == 1) || (ml == 1) || (mr == 1) || (bl == 1) || (bm == 1) || (br == 1))
 												{
 															//----------------- MR First ---------------------
-															if (primaryDir == ND || primaryDir == MR)
+															if ((primaryDir == ND) || (primaryDir == MR))
 															{
 																		if (tl == 1)
 																					tlFunction();
@@ -538,13 +540,27 @@ int main()
 			}
 			ofstream myfile("contourList.csv");
 			int vsize = contourList.size();
+			int numz = 0;
+			int hz = 0;
+			int wz = 0;
+			float fnumz = 0.0;
+			float fhz = 0.0;
+			float fwz = 0.0;
+
 			for (int n; n < vsize; n++)
 			{
 						tempPixel = contourList[n];
-						myfile << tempPixel.number << "," << tempPixel.h << "," << tempPixel.w << '\n';
+						numz = tempPixel.number;
+						hz = tempPixel.h;
+						wz = tempPixel.w;
+						fnumz = (float)numz;
+						fhz = (float)hz;
+						fwz = (float)wz;
+						
+						myfile << scientific << fnumz << "," << scientific << fhz << "," << scientific << fwz << '\n';
 			}
 			myfile.close();
-			*/
+
 			imshow("Direction Image", directionImg);
 			imwrite("directionImage.jpg", directionImg);
 
